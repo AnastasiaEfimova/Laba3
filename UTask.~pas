@@ -1,0 +1,102 @@
+unit UTask;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, UQueue, UQueueArray, UQueueList;
+
+type
+  TFormMain = class(TForm)
+    pnlMain: TPanel;
+    pnlBtn: TPanel;
+    lblChoise: TLabel;
+    lblInput: TLabel;
+    edtInput: TEdit;
+    lblFinish: TLabel;
+    mmoFinish: TMemo;
+    btnStart: TButton;
+    btnExit: TButton;
+    btnClean: TButton;
+    rbList: TRadioButton;
+    rbArray: TRadioButton;
+
+    procedure rbArrayClick(Sender: TObject);
+    procedure rbListClick(Sender: TObject);
+    procedure btnExitClick(Sender: TObject);
+    procedure btnCleanClick(Sender: TObject);
+    procedure edtInputChange(Sender: TObject);
+    procedure btnStartClick(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FormMain: TFormMain;
+implementation
+
+{$R *.dfm}
+procedure TFormMain.btnExitClick(Sender: TObject);
+  begin
+    close;
+  end;
+
+procedure TFormMain.edtInputChange(Sender: TObject);
+  begin
+    btnStart.Enabled:=(edtInput.Text<>'');
+    btnClean.Enabled:=edtInput.Text<>'';
+    MmoFinish.Lines.Clear;
+  end;
+
+procedure TFormMain.btnCleanClick(Sender: TObject);
+  begin
+    if edtInput.Text<>'' then
+      begin
+        edtInput.Text:='';
+        mmoFinish.Text:='';
+      end;
+  end;
+
+procedure TFormMain.rbArrayClick(Sender: TObject);
+  begin
+    btnCleanClick(Sender);
+    edtInput.Enabled:=True;
+    mmoFinish.Enabled:=True;
+  end;
+
+procedure TFormMain.rbListClick(Sender: TObject);
+  begin
+    btnCleanClick(Sender);
+    edtInput.Enabled:=True;
+    mmoFinish.Enabled:=True;
+  end;
+
+procedure TFormMain.btnStartClick(Sender: TObject);
+var
+  s:string;
+  i:integer;
+  queue: TPQueue;
+begin
+  s:=edtInput.Text;
+
+  if  (rbArray.Checked=true) then
+    queue:= TQueueMas.Create
+  else
+    queue:= TQueueList.Create;
+
+  s:=queue.Task(s);
+
+  if (s='') then
+    begin
+      ShowMessage('В строке нет целых чисел');
+      btnCleanClick(Sender);
+    end
+  else
+    mmoFinish.Text:=s;
+
+  FreeAndNil(queue);
+end;
+end.
